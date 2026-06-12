@@ -1,18 +1,12 @@
-from app.services.chat_service import ask_earthius
+from fastapi import FastAPI
 
+from app.api.chat import router as chat_router
+from app.api.health import router as health_router
 
-print("Earthius Instialize")
-print("Type 'exit' to quit.\n")
+app = FastAPI(
+    title="Earthius API",
+    version="1.0.0"
+)
 
-while True:
-
-    user_input = input("you: ")
-
-    if user_input.lower() == "exit":
-        break
-
-    response = ask_earthius(user_input)
-
-    print("\nEarthius:")
-    print(response)
-    print()
+app.include_router(chat_router)
+app.include_router(health_router)
