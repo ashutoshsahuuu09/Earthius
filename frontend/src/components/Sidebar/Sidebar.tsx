@@ -20,12 +20,12 @@ const yesterdayChats = [
 
 const Sidebar = () => {
   return (
-    <aside className="w-72 h-screen bg-[#0B1120] border-r border-slate-800 flex flex-col">
+    <aside className="w-64 h-screen bg-[#0B1120] border-r border-slate-800 flex flex-col">
 
       {/* Logo */}
       <div className="p-6 border-b border-slate-800">
         <h1 className="text-3xl font-bold text-white">
-          🌍 Earthius
+          🌍 EarthiusAI
         </h1>
 
         <p className="text-slate-400 text-sm mt-1">

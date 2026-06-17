@@ -24,22 +24,22 @@ const ChatInput = ({ onSend }: ChatInputProps) => {
   };
 
   return (
-    <div className="border-t border-slate-800 bg-[#0B1120] p-6">
-      <div className="flex items-center gap-3 bg-slate-900 rounded-2xl px-5 py-4 border border-slate-700">
+    <div className="border-t border-slate-800 bg-[#0B1120] p-3">
+      <div className="flex items-center gap-3 bg-slate-900 rounded-2xl px-4 py-3 border border-slate-700">
 
         {/* Attach */}
         <button className="text-slate-400 hover:text-white">
-          <Paperclip size={20} />
+          <Paperclip size={18} />
         </button>
 
         {/* Internet */}
         <button className="text-slate-400 hover:text-white">
-          <Globe size={20} />
+          <Globe size={18} />
         </button>
 
         {/* Brain */}
         <button className="text-slate-400 hover:text-white">
-          <Brain size={20} />
+          <Brain size={18} />
         </button>
 
         {/* Input */}
@@ -67,7 +67,7 @@ const ChatInput = ({ onSend }: ChatInputProps) => {
           disabled={!input.trim()}
           className="bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:cursor-not-allowed rounded-xl p-3 transition"
         >
-          <SendHorizontal size={18} />
+          <SendHorizontal size={16} />
         </button>
 
       </div>

@@ -11,6 +11,8 @@ export const useChat = () => {
     },
   ]);
 
+  const [loading, setLoading] = useState(false);
+
   const sendMessage = async (text: string) => {
     if (!text.trim()) return;
 
@@ -21,13 +23,17 @@ export const useChat = () => {
       content: text,
     };
 
+    // Show user message immediately
     setMessages((prev) => [...prev, userMessage]);
 
+    // Show typing indicator
+    setLoading(true);
+
     try {
-      // Ask AI
+      // Ask Earthius
       const reply = await askEarthius(text);
 
-      // Assistant Message
+      // AI Message
       const aiMessage: Message = {
         id: Date.now() + 1,
         role: "assistant",
@@ -36,6 +42,8 @@ export const useChat = () => {
 
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
+      console.error(error);
+
       const errorMessage: Message = {
         id: Date.now() + 1,
         role: "assistant",
@@ -43,11 +51,15 @@ export const useChat = () => {
       };
 
       setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      // Hide typing indicator
+      setLoading(false);
     }
   };
 
   return {
     messages,
     sendMessage,
+    loading,
   };
 };

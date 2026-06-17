@@ -1,11 +1,21 @@
-import { ollama } from "../api/ollama";
+const API_URL = "http://localhost:8000";
 
-export const askEarthius = async (prompt: string) => {
-  const response = await ollama.post("/api/generate", {
-    model: "gemma:2b",
-    prompt,
-    stream: false,
+export const askEarthius = async (message: string) => {
+  const response = await fetch(`${API_URL}/chat`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      message,
+    }),
   });
 
-  return response.data.response;
+  if (!response.ok) {
+    throw new Error("Failed to contact Earthius backend");
+  }
+
+  const data = await response.json();
+
+  return data.response;
 };

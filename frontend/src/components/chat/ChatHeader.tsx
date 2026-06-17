@@ -1,13 +1,17 @@
 import { Moon, Circle } from "lucide-react";
+import logo from "../../assets/logo.png"
 
 const ChatHeader = () => {
   return (
     <header className="h-20 border-b border-slate-800 bg-[#0B1120] flex items-center justify-between px-8">
 
       <div>
-        <h1 className="text-2xl font-bold text-white">
-          Earthius AI
-        </h1>
+
+        <img 
+        src = {logo}
+        alt = "EarthiusAI"
+        className ="h-11 w-auto"
+        />
 
         <div className="flex items-center gap-2 mt-1">
           <Circle
