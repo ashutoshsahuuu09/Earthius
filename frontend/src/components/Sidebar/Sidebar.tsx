@@ -7,6 +7,7 @@ import {
   User,
   MessageSquare,
 } from "lucide-react";
+import logo from "../../assets/logo.png"
 
 const todayChats = [
   "Explain Quantum Computing",
@@ -24,9 +25,13 @@ const Sidebar = () => {
 
       {/* Logo */}
       <div className="p-6 border-b border-slate-800">
-        <h1 className="text-3xl font-bold text-white">
-          🌍 EarthiusAI
-        </h1>
+
+        
+        <img 
+        src = {logo}
+        alt = "EarthiusAI"
+        className ="h-11 w-auto"
+        />
 
         <p className="text-slate-400 text-sm mt-1">
           Your Local AI Assistant

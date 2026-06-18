@@ -3,27 +3,14 @@ import logo from "../../assets/logo.png"
 
 const ChatHeader = () => {
   return (
-    <header className="h-20 border-b border-slate-800 bg-[#0B1120] flex items-center justify-between px-8">
+    <header className="h-13 border-b border-slate-900 bg-[#0B1120] flex items-center justify-between px-8">
 
-      <div>
+      <div className="flex items-center gap-4">
 
-        <img 
-        src = {logo}
-        alt = "EarthiusAI"
-        className ="h-11 w-auto"
-        />
+        <h1>
+          <strong><a href="http://localhost:5173/">EarthiusAI</a></strong>
+        </h1>
 
-        <div className="flex items-center gap-2 mt-1">
-          <Circle
-            size={10}
-            fill="#22c55e"
-            className="text-green-500"
-          />
-
-          <span className="text-sm text-slate-400">
-            Online
-          </span>
-        </div>
       </div>
 
       <div className="flex items-center gap-6">

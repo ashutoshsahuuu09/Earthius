@@ -1,14 +1,19 @@
 import { useEffect, useRef } from "react";
 import ChatMessage from "./ChatMessage";
-import TypingIndicator from "./TypingIndicator";
 import type { Message } from "../../types/message";
+import { RotateCcw } from "lucide-react";
 
 interface ChatWindowProps {
   messages: Message[];
   loading: boolean;
+  regenerate: () => void;
 }
 
-const ChatWindow = ({ messages, loading }: ChatWindowProps) => {
+const ChatWindow = ({
+  messages,
+  loading,
+  regenerate,
+}: ChatWindowProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,7 +41,30 @@ const ChatWindow = ({ messages, loading }: ChatWindowProps) => {
           />
         ))}
 
-        {loading && <TypingIndicator />}
+        {/* Regenerate Button */}
+        {!loading && messages.length > 1 && (
+          <div className="flex justify-center pt-2">
+            <button
+              onClick={regenerate}
+              className="
+                flex
+                items-center
+                gap-2
+                px-4
+                py-2
+                rounded-xl
+                bg-slate-800
+                hover:bg-slate-700
+                text-slate-300
+                hover:text-white
+                transition
+              "
+            >
+              <RotateCcw size={16} />
+              Regenerate Response
+            </button>
+          </div>
+        )}
 
         <div ref={bottomRef} />
       </div>

@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { Message } from "../types/message";
-import { askEarthius } from "../services/chatService";
+import {
+  streamEarthius,
+  type ChatMessage,
+} from "../services/chatService";
 
 export const useChat = () => {
   const [messages, setMessages] = useState<Message[]>([
@@ -12,54 +15,102 @@ export const useChat = () => {
   ]);
 
   const [loading, setLoading] = useState(false);
+  const [lastPrompt, setLastPrompt] = useState("");
+
+  const abortRef = useRef<AbortController | null>(null);
 
   const sendMessage = async (text: string) => {
-    if (!text.trim()) return;
+    if (!text.trim() || loading) return;
 
-    // User Message
+    setLastPrompt(text);
+    setLoading(true);
+
+    abortRef.current = new AbortController();
+
     const userMessage: Message = {
       id: Date.now(),
       role: "user",
       content: text,
     };
 
-    // Show user message immediately
-    setMessages((prev) => [...prev, userMessage]);
+    const aiId = Date.now() + 1;
 
-    // Show typing indicator
-    setLoading(true);
+    const aiMessage: Message = {
+      id: aiId,
+      role: "assistant",
+      content: "",
+    };
+
+    // Build conversation history BEFORE updating state
+    const conversation: ChatMessage[] = [
+      ...messages.map((m) => ({
+        role: m.role,
+        content: m.content,
+      })),
+      {
+        role: "user",
+        content: text,
+      },
+    ];
+
+    // Keep only the last 20 messages
+    const recentConversation = conversation.slice(-20);
+
+    // Show user + empty assistant bubble immediately
+    setMessages((prev) => [...prev, userMessage, aiMessage]);
 
     try {
-      // Ask Earthius
-      const reply = await askEarthius(text);
-
-      // AI Message
-      const aiMessage: Message = {
-        id: Date.now() + 1,
-        role: "assistant",
-        content: reply,
-      };
-
-      setMessages((prev) => [...prev, aiMessage]);
-    } catch (error) {
-      console.error(error);
-
-      const errorMessage: Message = {
-        id: Date.now() + 1,
-        role: "assistant",
-        content: "⚠️ Unable to connect to Earthius AI.",
-      };
-
-      setMessages((prev) => [...prev, errorMessage]);
+      await streamEarthius(
+        recentConversation,
+        (chunk) => {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === aiId
+                ? {
+                    ...msg,
+                    content: msg.content + chunk,
+                  }
+                : msg
+            )
+          );
+        },
+        abortRef.current.signal
+      );
+    } catch (error: any) {
+      if (error.name !== "AbortError") {
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === aiId
+              ? {
+                  ...msg,
+                  content: "⚠️ Unable to connect to Earthius AI.",
+                }
+              : msg
+          )
+        );
+      }
     } finally {
-      // Hide typing indicator
       setLoading(false);
+      abortRef.current = null;
     }
+  };
+
+  const regenerate = () => {
+    if (!lastPrompt || loading) return;
+
+    sendMessage(lastPrompt);
+  };
+
+  const stopGeneration = () => {
+    abortRef.current?.abort();
+    setLoading(false);
   };
 
   return {
     messages,
-    sendMessage,
     loading,
+    sendMessage,
+    regenerate,
+    stopGeneration,
   };
 };
