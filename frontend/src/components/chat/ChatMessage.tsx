@@ -32,7 +32,7 @@ const ChatMessage = ({ role, message }: ChatMessageProps) => {
           rounded-2xl
           text-[15px]
           leading-7
-          whitespace-pre-wrap
+          {/*whitespace-pre-wrap*/}
           break-words
           transition-all
           duration-200
