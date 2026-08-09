@@ -5,11 +5,27 @@ export interface ChatMessage {
   content: string;
 }
 
-/* --------------------------
-   Normal Chat
----------------------------*/
+
+//Fetch Available Models
+
+export const fetchModels = async (): Promise<string[]> => {
+  try {
+    const response = await fetch(`${API_URL}/models`);
+
+    if (!response.ok) return [];
+
+    const data = await response.json();
+    return data.models || [];
+  } catch {
+    return [];
+  }
+};
+
+
+//Normal Chat
 export const askEarthius = async (
-  messages: ChatMessage[]
+  messages: ChatMessage[],
+  model?: string
 ) => {
   const response = await fetch(`${API_URL}/chat`, {
     method: "POST",
@@ -18,6 +34,7 @@ export const askEarthius = async (
     },
     body: JSON.stringify({
       messages,
+      ...(model && { model }),
     }),
   });
 
@@ -36,7 +53,10 @@ export const askEarthius = async (
 export const streamEarthius = async (
   messages: ChatMessage[],
   onChunk: (chunk: string) => void,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  model?: string,
+  deepThink?: boolean,
+  webSearch?: boolean
 ) => {
   const response = await fetch(`${API_URL}/chat/stream`, {
     method: "POST",
@@ -45,6 +65,9 @@ export const streamEarthius = async (
     },
     body: JSON.stringify({
       messages,
+      ...(model && { model }),
+      deep_think: !!deepThink,
+      web_search: !!webSearch,
     }),
     signal,
   });
@@ -64,12 +87,8 @@ export const streamEarthius = async (
 
     if (done) break;
 
-    const chunk = decoder.decode(value);
-
-    // Send chunk to UI
-    onChunk(chunk);
-
-    // Smooth typing delay
-    await new Promise((resolve) => setTimeout(resolve, 25));
+    if (value) {
+      onChunk(decoder.decode(value, { stream: true }));
+    }
   }
 };

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import ChatMessage from "./ChatMessage";
+import TypingIndicator from "./TypingIndicator";
 import type { Message } from "../../types/message";
 import { RotateCcw } from "lucide-react";
 
@@ -22,6 +23,16 @@ const ChatWindow = ({
     });
   }, [messages, loading]);
 
+  // Find if the last message is an empty assistant message (still generating)
+  const lastMessage = messages[messages.length - 1];
+  const isWaitingForResponse =
+    loading && lastMessage?.role === "assistant" && !lastMessage.content;
+
+  // Filter out the empty assistant placeholder — we'll show TypingIndicator instead
+  const displayMessages = isWaitingForResponse
+    ? messages.slice(0, -1)
+    : messages;
+
   return (
     <div className="flex-1 overflow-y-auto">
       <div
@@ -33,13 +44,16 @@ const ChatWindow = ({
           space-y-5
         "
       >
-        {messages.map((message) => (
+        {displayMessages.map((message) => (
           <ChatMessage
             key={message.id}
             role={message.role}
             message={message.content}
           />
         ))}
+
+        {/* Show typing indicator while waiting for first chunk */}
+        {isWaitingForResponse && <TypingIndicator />}
 
         {/* Regenerate Button */}
         {!loading && messages.length > 1 && (
